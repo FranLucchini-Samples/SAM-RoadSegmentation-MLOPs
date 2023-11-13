@@ -14,38 +14,11 @@ def infer_fn(**inputs: np.ndarray):
     logger.info(f"CUDA available?: {torch.cuda.is_available()}")
 
     (input1_batch,) = inputs.values()
+    logger.info(input1_batch.shape)
+    logger.info(type(input1_batch))
 
-    '''
-    AttributeError: 'Results' object has no attribute 'shape'. See valid attributes below.
-
-    A class for storing and manipulating inference results.
-
-    Args:
-        orig_img (numpy.ndarray): The original image as a numpy array.
-        path (str): The path to the image file.
-        names (dict): A dictionary of class names.
-        boxes (torch.tensor, optional): A 2D tensor of bounding box coordinates for each detection.
-        masks (torch.tensor, optional): A 3D tensor of detection masks, where each mask is a binary image.
-        probs (torch.tensor, optional): A 1D tensor of probabilities of each class for classification task.
-        keypoints (List[List[float]], optional): A list of detected keypoints for each object.
-
-    Attributes:
-        orig_img (numpy.ndarray): The original image as a numpy array.
-        orig_shape (tuple): The original image shape in (height, width) format.
-        boxes (Boxes, optional): A Boxes object containing the detection bounding boxes.
-        masks (Masks, optional): A Masks object containing the detection masks.
-        probs (Probs, optional): A Probs object containing probabilities of each class for classification task.
-        keypoints (Keypoints, optional): A Keypoints object containing detected keypoints for each object.
-        speed (dict): A dictionary of preprocess, inference, and postprocess speeds in milliseconds per image.
-        names (dict): A dictionary of class names.
-        path (str): The path to the image file.
-        _keys (tuple): A tuple of attribute names for non-empty attributes.
-    
-    '''
-
-    # logger.info(input1_batch.shape)
-
-    outputs = model(input1_batch[0]) # Calling the Python model inference
+    input_list = [img for img in input1_batch]
+    outputs = model(input_list) # Calling the Python model inference
     # np.asarray(outputs)
     # outputs_batch = outputs.numpy()
     # logger.info(outputs.numpy().shape)
@@ -59,10 +32,15 @@ def infer_fn(**inputs: np.ndarray):
     # Returns torch.Tensor
     # masks = outputs[0].masks.cpu().data 
     print(np.array(masks).shape)
-    print([np.array(masks)].shape)
+    print(np.array([masks]).shape)
     logger.info(f"MASKS LEN {len(masks)} TYPE {type(masks)}")
 
-    return [np.array(masks)]
+    batch_masks = [np.array(masks)]
+
+    # Make np.array because intern objects of list must have the .shape attribute
+    return batch_masks
+    # Does not work: ValueError: Received output tensors with different batch sizes: OUTPUT_1: (41, 400, 640). Expected batch size: 1. 
+    # return masks 
 
 
 # Connecting inference callable with Triton Inference Server
