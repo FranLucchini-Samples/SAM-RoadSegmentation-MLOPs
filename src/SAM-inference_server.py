@@ -13,16 +13,15 @@ import logging
 def infer_fn(**inputs: np.ndarray):
     logger.info(f"CUDA available?: {torch.cuda.is_available()}")
 
+    print(inputs.keys())
+
     (input1_batch,) = inputs.values()
     logger.info(input1_batch.shape)
     logger.info(type(input1_batch))
 
-    input_list = [img for img in input1_batch]
-    outputs = model(input_list) # Calling the Python model inference
-    # np.asarray(outputs)
-    # outputs_batch = outputs.numpy()
-    # logger.info(outputs.numpy().shape)
-    # logger.info(f"TYPE {type(outputs[0])}, LEN {len(outputs[0])}")
+    # input_list = [img for img in input1_batch]
+    outputs = model(input1_batch[0]) # Calling the Python model inference
+
     for i, res in enumerate(outputs):
         logger.info(f"Res {i}, len {len(res)}, type {type(res)}")
 
@@ -54,7 +53,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 logger.info("Hello World! Loading model...")
 # Load a model
-model = SAM('weights/sam_b.pt')
+model = SAM('../weights/sam_b.pt')
 
 # Display model information (optional)
 print(model.info())
@@ -76,7 +75,6 @@ with Triton() as triton:
         config=ModelConfig(max_batch_size=128)
     )
 
-    triton.serve()
 
-# if __name__ == "__main__":
-#     main()
+
+    triton.serve()

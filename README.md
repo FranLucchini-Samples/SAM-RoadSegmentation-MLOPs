@@ -180,3 +180,30 @@ curl -X POST \
   localhost:8000/v2/models/SAM/infer
 
 ```
+
+## Docker
+
+```sh
+docker build --force-rm -f sam.Dockerfile -t sam-pytriton .
+```
+
+```sh
+docker run --rm -it \
+--gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
+-v <path absoluto a la carpeta local>:/src \
+sam-pytriton
+```
+
+```sh
+docker run --rm -it \
+--gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
+-v /home/fran/Learn-MLOps/SAM-RoadSegmentation-MLOPs/src:/src \
+sam-pytriton
+```
+
+Map port 8080 on the Docker host to TCP port 80 in the container.
+
+```sh
+docker run --rm -it -p 8000:8000 --gpus all \
+sam-pytriton
+```
