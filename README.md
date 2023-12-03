@@ -1,10 +1,51 @@
 # SAM-RoadSegmentation-MLOPs
 Building MLOPs pipelines for automated ML Road Segmentation with SAM
 
+
+## FastAPI Serving
+[Source](https://fastapi.tiangolo.com/#example)
+
+```python {"skip": true}
+from statistics import mean 
+from fastapi import FastAPI
+import uvicorn
+
+app = FastAPI()
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: Union[str, None] = None):
+    return {"item_id": item_id, "q": q}
+
+@app.post("/predict")
+def predict(body: dict):
+    res = mean(body['list'])
+    return {"res": }
+
+if __name__ == "__main__":
+    uvicorn.run("<module-name>:app", host="0.0.0.0", port=8000, reload=True,)
+```
+
+This code uses uvicorn to run a server in `localhost:8000` with automatic reload. The code above demonstrates examples of get and post paths.
+
+It is important to note that `uvicorn run` expects the name of the file and the variavle name of the FastAPI server:
+```python
+# file server_file.py
+my_app = FastAPI()
+...
+    uvicorn.run("server_file:my_app", host="0.0.0.0", port=8000, reload=True,)
+```
+The flag `reload=True` allows all changes in the code to be applied automatically to the server.
+
+
 ## PyTriton Serving
 
 [Source](https://triton-inference-server.github.io/pytriton/0.4.0/)
-
 
 
 ```python {"skip": true}
@@ -106,9 +147,9 @@ python pytriton_inference.py
 # I1107 19:16:12.716755 27653 model_lifecycle.cc:817] successfully loaded 'Linear'
 ```
 
-## Query Served API
+### Query Served API
 
-### Server status
+#### Server status
 
 ```sh
 curl -v localhost:8000/v2/health/live
@@ -128,7 +169,7 @@ curl -v localhost:8000/v2/health/live
 # * Connection #0 to host localhost left intact
 ```
 
-### Model status
+#### Model status
 ```sh
 curl -v localhost:8000/v2/models/Linear/ready
 
@@ -149,7 +190,7 @@ curl -v localhost:8000/v2/models/Linear/ready
 ```
 
 
-### Inference
+#### Inference
 
 ```sh
 curl -X POST \
@@ -183,14 +224,16 @@ curl -X POST \
 
 ## Docker
 
+### PyTriton
+
 ```sh
-docker build --force-rm -f sam.Dockerfile -t sam-pytriton .
+docker build --force-rm -f pytriton-sam.Dockerfile -t sam-pytriton .
 ```
 
 ```sh
 docker run --rm -it \
 --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
--v <path absoluto a la carpeta local>:/src \
+-v <absolute-path-to-local-folder>:/src \
 sam-pytriton
 ```
 
@@ -206,4 +249,30 @@ Map port 8080 on the Docker host to TCP port 80 in the container.
 ```sh
 docker run --rm -it -p 8000:8000 --gpus all \
 sam-pytriton
+```
+
+### FastAPI
+```sh
+docker build --force-rm -f fastapi-sam.Dockerfile -t sam-fastapi .
+```
+
+```sh
+docker run --rm -it \
+--gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
+-v <absolute-path-to-local-folder>:/src \
+sam-fastapi
+```
+
+```sh
+docker run --rm -it \
+--gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
+-v /home/fran/Learn-MLOps/SAM-RoadSegmentation-MLOPs/src:/src \
+sam-fastapi
+```
+
+Map port 8080 on the Docker host to TCP port 80 in the container.
+
+```sh
+docker run --rm -it -p 8000:8000 --gpus all \
+sam-fastapi
 ```
