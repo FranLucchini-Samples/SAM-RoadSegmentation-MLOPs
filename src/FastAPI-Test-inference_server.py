@@ -20,8 +20,12 @@ def predict(body: dict):
         mean_list.append(mean(inf['values']))
     
     parameters = body["parameters"]
-    return {"mean_list": mean_list, "config": parameters['param1']}
-
+    return {
+        "predictions": [{
+            "mean": mean_list, 
+            "config": parameters['param1']
+        }]
+        }
 
 
 if __name__ == "__main__":

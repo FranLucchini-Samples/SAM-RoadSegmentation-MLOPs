@@ -16,7 +16,7 @@ body = {
             {"values": [0.1, 0.2, 0.3]},
             {"values": [0.6, 0.2, 1.3]}
         ],
-        "parameters": {"param1": 1.54},
+        "parameters": {"param1": 1.54}
     }
 
 # POST request with body
