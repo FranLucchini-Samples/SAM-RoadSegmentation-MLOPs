@@ -5,7 +5,7 @@ Building MLOPs pipelines for automated ML Road Segmentation with SAM
 ## FastAPI Serving
 [Source](https://fastapi.tiangolo.com/#example)
 
-```python {"skip": true}
+```python
 from statistics import mean 
 from fastapi import FastAPI
 import uvicorn
@@ -48,7 +48,7 @@ The flag `reload=True` allows all changes in the code to be applied automaticall
 [Source](https://triton-inference-server.github.io/pytriton/0.4.0/)
 
 
-```python {"skip": true}
+```python
 import numpy as np
 import ModelConfig, Tensor
 from pytriton.model_config
