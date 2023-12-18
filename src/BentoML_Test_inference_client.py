@@ -1,3 +1,5 @@
+"""Dummy client for BentoML
+"""
 import requests
 
 local = "127.0.0.1"

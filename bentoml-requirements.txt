@@ -10,7 +10,7 @@ torch==2.1.0+cu121
 torchaudio==2.1.0+cu121
 torchvision==0.16.0+cu121
 ultralytics==8.0.207
-bentoml==1.1.10
+bentoml[io-json]==1.1.10
 matplotlib>=3.2.2
 numpy>=1.18.5
 protobuf<=3.20.1
