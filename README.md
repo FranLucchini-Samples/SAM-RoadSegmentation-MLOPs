@@ -276,4 +276,49 @@ Map port 8080 on the Docker host to TCP port 80 in the container.
 docker run --rm -it -p 8000:8000 --gpus all \
 sam-fastapi
 ```
+
 # Sphinxs Docs
+
+## Start
+
+```bash
+pip install -r docs/requirements.txt
+sphinx-quickstart docs # NOTE: Run only if docs folder is not created yet!
+```
+
+## Autogenerate Docs
+
+Use the Autodoc Extension to create new docs automatically.
+
+### Edit Path
+In [`docs/conf.py`](docs\conf.py) add the folder containing the file to document.
+
+```python
+sys.path.insert(0, os.path.abspath('..'))
+# Add new path starting from the root using ../
+sys.path.insert(0, os.path.abspath('../<folder_relative_path>'))
+
+```
+
+### Edit docstring
+
+Following the documentation of [`sphinx.ext.autodoc`](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html), include the new modules or classes to document in the [`docs/index.rst`]():
+
+```rst
+Welcome to sam-roads's documentation!
+=====================================
+
+.. automodule:: <new_file_module_path>
+   :members:
+```
+
+### Build html files
+Linux/MacOS
+```bash
+cd docs | make html
+```
+
+Windows
+```bash
+docs\make.bat html
+```
