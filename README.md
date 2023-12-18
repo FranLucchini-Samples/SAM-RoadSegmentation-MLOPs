@@ -277,7 +277,7 @@ docker run --rm -it -p 8000:8000 --gpus all \
 sam-fastapi
 ```
 
-# Sphinxs Docs
+# Sphinx's Docs
 
 ## Start
 
