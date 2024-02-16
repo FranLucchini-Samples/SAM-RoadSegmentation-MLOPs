@@ -1,6 +1,66 @@
 # SAM-RoadSegmentation-MLOPs
 Building MLOPs pipelines for automated ML Road Segmentation with SAM
 
+## BentoML Serving
+
+[Source](https://docs.bentoml.org/en/latest/quickstarts/deploy-a-transformer-model-with-bentoml.html?_gl=1*41ck0w*_gcl_au*MTY2NDk4MjEyMy4xNzAxODAxNjE2)
+
+### Download preconfigured models
+Starting from BentoML version 1.1.9, you can also use the bentoml.transformers.import_model function to import the model directly without having to load it into memory first, which is particularly useful for large models.
+```python
+import bentoml
+
+model = "sshleifer/distilbart-cnn-12-6"
+task = "summarization"
+
+# Import the model directly without loading it into memory
+bentoml.transformers.import_model(
+   name=task,
+   model_name_or_path=model,
+   metadata=dict(model_name=model)
+)
+```
+
+Then run the script to get the model:
+```sh
+python download_model.py
+```
+
+The model should appear in our BentoML list:
+```sh
+bentoml models list
+
+# Tag                                    Module                Size       Creation Time
+# summarization:5kiyqyq62w6pqnry         bentoml.transformers  1.14 GiB   2023-07-10 11:57:40
+```
+
+### Run server
+
+Define a service called `svc` with the `runner` associated to the `summarization`
+```python
+import bentoml
+
+summarizer_runner = bentoml.models.get("summarization:latest").to_runner()
+
+svc = bentoml.Service(
+    name="summarization", runners=[summarizer_runner]
+)
+
+@svc.api(input=bentoml.io.Text(), output=bentoml.io.Text())
+async def summarize(text: str) -> str:
+    generated = await summarizer_runner.async_run(text, max_length=3000)
+    return generated[0]["summary_text"]
+```
+
+The file is called `service.py`, which is relevant when we want to run the following command to run the service:
+```sh
+bentoml serve service:svc
+```
+The name structure is:
+```
+bentoml serve <file_name>:<service_variable_name>
+```
+**NOTE**: you must be inside the folder containing the service file. It does not use paths as service names.
 
 ## FastAPI Serving
 [Source](https://fastapi.tiangolo.com/#example)
@@ -277,7 +337,7 @@ docker run --rm -it -p 8000:8000 --gpus all \
 sam-fastapi
 ```
 
-# Sphinx's Docs
+## Sphinx's Docs
 
 ## Start
 

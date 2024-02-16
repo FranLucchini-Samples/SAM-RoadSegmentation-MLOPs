@@ -4,8 +4,7 @@ FROM python:3.10
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y
 # RUN apt-get install git-all -y
 
-##  Install pytriton
-# RUN pip install -U nvidia-pytriton==0.4.0 ultralytics==8.0 opencv-python==4.8.1.78 Pillow==10.0.1
+##  Install BentoML
 COPY bentoml-requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 

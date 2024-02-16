@@ -1,6 +1,10 @@
+import torch
+from ultralytics import SAM
 import bentoml
-from bentoml.io import NumpyNdarray
+# from bentoml.io import NumpyNdarray
 from bentoml.io import JSON
+import numpy as np
+# from bentoml.io import Image
 
 
 class Yolov5Runnable(bentoml.Runnable):
@@ -18,9 +22,9 @@ class Yolov5Runnable(bentoml.Runnable):
     def __init__(self):
         """Initialization
         """
-        import torch
 
-        self.model = torch.hub.load("ultralytics/yolov5:v6.2", "yolov5s")
+        # Load a model
+        self.model = SAM('sam_b.pt')
 
         if torch.cuda.is_available():
             self.model.cuda()
@@ -28,21 +32,32 @@ class Yolov5Runnable(bentoml.Runnable):
             self.model.cpu()
 
         # Config inference settings
-        self.inference_size = 320
+        # self.inference_size = 320
 
     @bentoml.Runnable.method(batchable=True, batch_dim=0)
     def inference(self, input_imgs):
         """_summary_
 
         Args:
-            input_imgs (_type_): _description_
+            input_imgs (list<np.array>): _description_
 
         Returns:
             _type_: _description_
         """
-        # Return predictions only
-        results = self.model(input_imgs, size=self.inference_size)
-        return results.pandas().xyxy
+        # SAM model does not support batched inferences yet
+        results = []
+        for im in input_imgs:
+            # SAM ouput: tuple of pred_masks, pred_scores, pred_bboxes
+            pred_masks, pred_scores, pred_bboxes = self.model(im)
+            results.append({
+                "pred_masks": pred_masks,
+                "pred_scores": pred_scores,
+                "pred_bboxes": pred_bboxes
+            })
+        # print(results)
+        # results = [res.tojson() for res in self.model(np.asarray(input_imgs[0]))]
+        # return results
+        return "a"
 
     @bentoml.Runnable.method(batchable=True, batch_dim=0)
     def render(self, input_imgs):
@@ -64,14 +79,18 @@ svc = bentoml.Service("yolo_v5_demo", runners=[yolo_v5_runner])
 # NOTE: Healthcheck funtion handled by Bento
 
 @svc.api(input=JSON(), output=JSON())
-async def inference(input_img):
+async def inference(body):
     """_summary_
 
     Args:
-        input_img (_type_): _description_
+        body (_type_): _description_
 
     Returns:
         _type_: _description_
     """
-    batch_ret = await yolo_v5_runner.inference.async_run([input_img])
-    return { "predictions": [1,2,3] }
+    # print(body)
+    # Transform each image in body istances to a torch tensor
+    images = [torch.tensor(img) for img in body['instances']]
+    # print(images.shape)
+    batch_ret = await yolo_v5_runner.inference.async_run(images)
+    return { "results": batch_ret }
