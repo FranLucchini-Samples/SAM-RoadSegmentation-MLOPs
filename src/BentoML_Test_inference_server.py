@@ -9,7 +9,7 @@ import base64
 import cv2
 
 
-class Yolov5Runnable(bentoml.Runnable):
+class SAMRunnable(bentoml.Runnable):
     """BentoML Runnable for a model
 
     Args:
@@ -72,8 +72,8 @@ class Yolov5Runnable(bentoml.Runnable):
         return self.model(input_imgs, size=self.inference_size).render()
 
 
-yolo_v5_runner = bentoml.Runner(Yolov5Runnable, max_batch_size=30)
-svc = bentoml.Service("yolo_v5_demo", runners=[yolo_v5_runner])
+sam_runner = bentoml.Runner(SAMRunnable, max_batch_size=30)
+svc = bentoml.Service("sam_demo", runners=[sam_runner])
 
 # NOTE: Healthcheck funtion handled by Bento
 
@@ -97,5 +97,5 @@ async def inference(body):
         # append to images
         images.append(img)
     print(images[0].shape)
-    batch_ret = await yolo_v5_runner.inference.async_run(images)
+    batch_ret = await sam_runner.inference.async_run(images)
     return { "results": batch_ret }

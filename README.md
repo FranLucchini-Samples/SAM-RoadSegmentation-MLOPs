@@ -62,6 +62,22 @@ bentoml serve <file_name>:<service_variable_name>
 ```
 **NOTE**: you must be inside the folder containing the service file. It does not use paths as service names.
 
+### Build Dockerfile
+
+Put the `BentoML.yaml` file and the requirements file in the same folder as the services needed. Inside that folder run the following command:
+
+```sh
+ bentoml build -f BentoML.yaml
+```
+
+Run bentoml build in your project directory to build the Bento. All created Bentos are stored in /home/user/bentoml/bentos/ by default.
+
+Next, we run the image with the following command:
+
+```
+
+```
+
 ## FastAPI Serving
 [Source](https://fastapi.tiangolo.com/#example)
 
