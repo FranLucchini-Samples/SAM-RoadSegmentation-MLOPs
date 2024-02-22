@@ -5,6 +5,8 @@ import bentoml
 from bentoml.io import JSON
 import numpy as np
 # from bentoml.io import Image
+import base64
+import cv2
 
 
 class Yolov5Runnable(bentoml.Runnable):
@@ -34,7 +36,7 @@ class Yolov5Runnable(bentoml.Runnable):
         # Config inference settings
         # self.inference_size = 320
 
-    @bentoml.Runnable.method(batchable=True, batch_dim=0)
+    @bentoml.Runnable.method(batchable=False, batch_dim=0)
     def inference(self, input_imgs):
         """_summary_
 
@@ -48,16 +50,13 @@ class Yolov5Runnable(bentoml.Runnable):
         results = []
         for im in input_imgs:
             # SAM ouput: tuple of pred_masks, pred_scores, pred_bboxes
-            pred_masks, pred_scores, pred_bboxes = self.model(im)
-            results.append({
-                "pred_masks": pred_masks,
-                "pred_scores": pred_scores,
-                "pred_bboxes": pred_bboxes
-            })
-        # print(results)
+            print(im.shape)
+            model_res = self.model(im)
+            # Selecy only index cero because it does not support batched inferences
+            results.append(model_res[0].tojson())
+        print(results)
         # results = [res.tojson() for res in self.model(np.asarray(input_imgs[0]))]
-        # return results
-        return "a"
+        return results
 
     @bentoml.Runnable.method(batchable=True, batch_dim=0)
     def render(self, input_imgs):
@@ -90,7 +89,13 @@ async def inference(body):
     """
     # print(body)
     # Transform each image in body istances to a torch tensor
-    images = [torch.tensor(img) for img in body['instances']]
-    # print(images.shape)
+    # image = np.frombuffer(base64.b64decode(input["instances"][0]["image"]) , dtype=np.uint8)
+    images = []
+    for img in body['instances']:
+        img = np.frombuffer(base64.b64decode(img) , dtype=np.uint8)
+        img = cv2.imdecode(img, 1)
+        # append to images
+        images.append(img)
+    print(images[0].shape)
     batch_ret = await yolo_v5_runner.inference.async_run(images)
     return { "results": batch_ret }

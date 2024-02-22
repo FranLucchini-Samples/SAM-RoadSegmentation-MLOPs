@@ -2,6 +2,9 @@ import requests
 from PIL import Image
 import numpy as np
 import os
+import cv2
+import json
+import base64
 
 local = "localhost"
 
@@ -29,24 +32,20 @@ inputs = []
 # TODO: test with th eimage object, not as a numpy array or tensor
 for img_fn in [file for file in os.listdir(input_folder) if file.lower().endswith('.png')]:
     print(img_fn)
-    img = Image.open(
+    # Read image with cv2
+    img = cv2.imread(
         os.path.join(
             input_folder,
             img_fn
-        )).resize((640, 416))
-
-    np_img = np.expand_dims(
-            np.array(img, dtype=np.float16),
-            axis=0
         )
-    # inputs should be BCHW i.e. shape(1, 3, 640, 400)
-    np_img = np_img.transpose((0, 3, 2, 1))
+    )
 
-    print(np_img.shape)
-    print(np_img[0, 0, :10, :10])
-    # Transform np_img to python list
-    py_img = np_img.tolist()
-    inputs.append(py_img)
+    # Convert to jpg using cv2
+    _, buffer = cv2.imencode('.jpg', img)
+    # Decode buffer to base64
+    enc_img = base64.b64encode(buffer).decode('utf-8')
+    # Append to inputs
+    inputs.append(enc_img)
 
 body = {
         "instances": inputs,
@@ -59,3 +58,7 @@ response = requests.post(
     json=body,
 )
 print(response.json())
+
+# Dump response to json file with indent=2
+with open('response.json', 'w') as f:
+    json.dump(response.json(), f, indent=2)
