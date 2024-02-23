@@ -1,0 +1,30 @@
+service: 'BentoML_Test_inference_server:svc'
+description: |
+    ## Description For My Bento 🍱
+
+    Use **any markdown syntax** here!
+
+    > BentoML is awesome!
+labels:
+  owner: bentoml-team
+  project: SAM-RoadSegmentation-MLOps
+include:
+  - '**/BentoML*.py'
+docker:
+    distro: debian
+    python_version: "3.9"
+python:
+  packages:
+    - opencv-python==4.8.1.78
+    - pandas==2.1.2
+    - pynvml==11.5.0
+    - scipy==1.11.3
+    - seaborn==0.13.0
+    - tqdm==4.66.1
+    - torch
+    - ultralytics==8.0.207
+    - bentoml[io-json]==1.1.10
+    - numpy>=1.18.5
+    - protobuf<=3.20.1
+    - requests>=2.23.0
+    - tqdm>=4.41.0

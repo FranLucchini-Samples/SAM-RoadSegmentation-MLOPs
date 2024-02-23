@@ -64,18 +64,25 @@ bentoml serve <file_name>:<service_variable_name>
 
 ### Build Dockerfile
 
+**NOTE --> BUG** Error whe using conda.yaml or requirements.txt [[Source]](https://github.com/bentoml/BentoML/issues/3146)
+
 Put the `BentoML.yaml` file and the requirements file in the same folder as the services needed. Inside that folder run the following command:
 
 ```sh
- bentoml build -f BentoML.yaml
+ bentoml build -f BentoML.yaml --containerize
 ```
 
-Run bentoml build in your project directory to build the Bento. All created Bentos are stored in /home/user/bentoml/bentos/ by default.
+Run bentoml build in your project directory to build the Bento. All created Bentos are stored in /home/user/bentoml/bentos/ by default. The `--containerize` flag builds the Docker image.
 
 Next, we run the image with the following command:
 
+```sh
+docker run -it --rm -p 3000:3000 <service_name>:<tag>
 ```
 
+Example
+```sh
+docker run -it --rm -p 3000:3000 sam_demo:5re6gewskcdtknhi serve
 ```
 
 ## FastAPI Serving
