@@ -73,7 +73,7 @@ class SAMRunnable(bentoml.Runnable):
 
 
 sam_runner = bentoml.Runner(SAMRunnable, max_batch_size=30)
-svc = bentoml.Service("sam_demo", http={"port": 5000}, runners=[sam_runner])
+svc = bentoml.Service("sam_demo", runners=[sam_runner])
 
 # NOTE: Healthcheck funtion handled by Bento
 

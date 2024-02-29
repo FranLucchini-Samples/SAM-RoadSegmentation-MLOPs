@@ -56,20 +56,26 @@ The file is called `service.py`, which is relevant when we want to run the follo
 ```sh
 bentoml serve service:svc
 ```
+
+An example with a different port:
+```sh
+bentoml serve -p 5000 BentoML_Test_inference_server:svc
+```
+
 The name structure is:
 ```
 bentoml serve <file_name>:<service_variable_name>
 ```
 **NOTE**: you must be inside the folder containing the service file. It does not use paths as service names.
 
-### Build Dockerfile
+<!-- ### Build Dockerfile
 
-**NOTE --> BUG** Error whe using conda.yaml or requirements.txt [[Source]](https://github.com/bentoml/BentoML/issues/3146)
+**NOTE &rarr; BUG** Error whe using conda.yaml or requirements.txt [[Source]](https://github.com/bentoml/BentoML/issues/3146)
 
 Put the `BentoML.yaml` file and the requirements file in the same folder as the services needed. Inside that folder run the following command:
 
 ```sh
- bentoml build -f BentoML.yaml --containerize
+bentoml build -f BentoML.yaml --containerize
 ```
 
 Run bentoml build in your project directory to build the Bento. All created Bentos are stored in /home/user/bentoml/bentos/ by default. The `--containerize` flag builds the Docker image.
@@ -77,13 +83,13 @@ Run bentoml build in your project directory to build the Bento. All created Bent
 Next, we run the image with the following command:
 
 ```sh
-docker run -it --rm -p 3000:3000 <service_name>:<tag>
+docker run -it --rm -p 5000:5000 <service_name>:<tag>
 ```
 
 Example
 ```sh
-docker run -it --rm -p 3000:3000 sam_demo:5re6gewskcdtknhi serve
-```
+docker run -it --rm -p 5000:5000 sam_demo:5re6gewskcdtknhi serve
+``` -->
 
 ## FastAPI Serving
 [Source](https://fastapi.tiangolo.com/#example)
@@ -358,6 +364,18 @@ Map port 8080 on the Docker host to TCP port 80 in the container.
 ```sh
 docker run --rm -it -p 8000:8000 --gpus all \
 sam-fastapi
+```
+
+### BentoML
+
+```sh
+docker build --force-rm -f src/BentoML/bentoml-sam.Dockerfile -t sam-bentoml .
+```
+
+Map port 5000 on the Docker host to TCP port 80 in the container.
+
+```sh
+docker run --rm -it -p 5000:5000 --gpus all sam-bentoml
 ```
 
 ## Sphinx's Docs

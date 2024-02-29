@@ -8,7 +8,7 @@ import base64
 
 local = "localhost"
 
-port = "3000"
+port = "5000"
 
 url = f"http://{local}:{port}"
 
@@ -26,7 +26,7 @@ print('GET healthz:', response)
 # response = requests.get(f'{url}/metrics')
 # print('GET metrics:', response)
 script_path = os.path.dirname(os.path.abspath(__file__))
-input_folder = os.path.join(script_path, "..\input")
+input_folder = os.path.join(script_path, "..\..\input")
 inputs = []
 
 # TODO: test with th eimage object, not as a numpy array or tensor
